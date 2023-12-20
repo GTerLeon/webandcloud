@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TinyPet</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+<script src="https://unpkg.com/mithril/mithril.js"></script>
+</head>
+<body>
+
+<script>
+
+// Model for Petition
+var Petition = {
+    list: [],
+    myPetitions: [],
+    create: function(title, description) {
+        // Create petition
+    },
+    loadList: function() {
+        // Load petitions from the server
+    },
+    loadMyPetitions: function() {
+        // Load user petition
+    }
+};
+
+// Petition Creation View
+var PetitionCreateView = {
+    title: '',
+    description: '',
+    view: function() {
+        return m('div', [
+        m('div',{class:'subtitle'},"Create a petition"),
+        m('input[type=text][placeholder=Title of petition]', {
+            oninput: function (e) { PetitionCreateView.title = e.target.value },
+            value: PetitionCreateView.title
+        }),
+        m('input[type=text][placeholder=Description of petition]', {
+            oninput: function (e) { PetitionCreateView.description = e.target.value },
+            value: PetitionCreateView.description
+        }),
+        m('button', {
+            class: 'button is-link',
+            onclick: function() {
+                Petition.create(PetitionCreateView.title, PetitionCreateView.description);
+            }
+        }, 'Create')
+        ]);
+    }	
+};
+
+// My Petitions View
+var MyPetitionsView = {
+    oninit: Petition.loadMyPetitions,
+    view: function() {
+        return m('div', [
+            m('h2', 'Petitions I have signed'),
+            Petition.myPetitions.map(function(petition) {
+                return m('p', petition.title + ' - ' + petition.signatureCount);
+            })
+        ]);
+    }
+};
+
+// Top Petitions View
+var TopPetitionsView = {
+    oninit: Petition.loadList,
+    view: function() {
+        return m('div', [
+            m('h2', 'Top 100 petitions'),
+            Petition.list.map(function(petition) {
+                return m('p', petition.title + ' - ' + petition.signatureCount);
+            })
+        ]);
+    }
+};
+
+var App = {
+    view: function() {
+        return m('div', {class: 'container'}, [
+            m('h1', {class: 'title'}, 'TinyPet'),
+            m('div', {class: 'title is-ancestor'}, [
+                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(PetitionCreateView))),
+                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(TopPetitionsView))),
+                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(MyPetitionsView))),
+            ])
+        ]);
+    }
+};
+
+m.mount(document.body, App);
+
+</script>
+</body>
+</html>
