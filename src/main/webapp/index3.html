@@ -118,6 +118,8 @@ var ScoreView = {
   }
 }
 
+var MyScores = { topScores: [], myScores: [], fetchTopScores: function() { return m.request({ method: "GET", url: "/topscores" }).then(function(result) { ScoreService.topScores = result; }); }, fetchMyScores: function(currentUserName) { return m.request({ method: "GET", url: "/myscores", data: { name: currentUserName } }).then(function(result) { ScoreService.myScores = result; }); } }; 
+
 var Hello = {
    view: function() {
    	return m('div', {class:'container'}, [
@@ -125,6 +127,7 @@ var Hello = {
            m('div',{class: 'tile is-ancestor'},[
                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(DiceView))),
                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(ScoreView))),
+			   m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(MyScores))),
            ])
        ])
    }
