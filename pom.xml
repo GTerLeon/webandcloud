@@ -42,7 +42,7 @@
 
     <checkstyle.skip>true</checkstyle.skip>
     
-    <endpoints.project.id>starry-aegis-400912</endpoints.project.id>
+    <endpoints.project.id>sobike44</endpoints.project.id>
   </properties>
 
   <dependencies>
@@ -111,9 +111,10 @@
         <artifactId>appengine-maven-plugin</artifactId>
         <version>2.2.0</version>
         <configuration>
-          <!-- deploy configuration -->
-          <projectId>GCLOUD_CONFIG</projectId>
-          <version>GCLOUD_CONFIG</version>
+        <!-- deploy configuration -->
+        <projectId>GCLOUD_CONFIG</projectId>
+        <!-- <version>GCLOUD_CONFIG</version> -->
+        <cloudSdkVersion>449.0.0</cloudSdkVersion>
         </configuration>
       </plugin>
       <!-- [START endpoints_plugin] -->
