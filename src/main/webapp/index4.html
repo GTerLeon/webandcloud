@@ -118,22 +118,41 @@ var TopPetitionsView = {
     view: function() {
         return m('div', [
             m('h2', 'Top 100 petitions'),
-            m('div', {class: 'columns is-multiline'},
-                // Loop over each petition in the list and display it
-                TopPetitionsView.list.map(function(petition) {
-                    return m('div', {class: 'column is-one-third'}, [
-                        m('div', {class: 'box'}, [
-                            m('h1', {class: 'title'}, petition.title),
-                            // ... Add other petition details here
-                            m('p', {class: 'signs'}, 'Signatures: ' + petition.signatureCount),
-                            // Add a button or link to sign the petition
-                        ])
-                    ]);
-                })
-            )
+            Petition.list.map(function(petition) {
+                return m('div', {class: 'petition'}, [
+                    m('h3', petition.title),
+                    m('p', petition.description),
+                    m('button', {
+                        onclick: function() {
+                            signPetition(petition.id); // Assuming petition has an id field
+                        }
+                    }, 'Sign')
+                ]);
+            })
         ]);
     }
 };
+
+function signPetition(petitionId) {
+    if (!isLoggedIn()) {
+        redirectToLogin();
+        return;
+    }
+    var url = "_ah/api/myApi/v1/signPetition/" + petitionId + "/" + id_user;
+
+    m.request({
+        method: 'POST', // Change to POST if your API requires it
+        url: url,
+    })
+    .then(response => {
+        console.log('Signed');
+        TopPetitionsView.loadList();
+        MyPetitionsView.loadMyPetitions();
+    })
+    .catch(error => {
+        console.error('Error couldn\'t sign:', error);
+    });
+}
 
 var App = {
     view: function() {

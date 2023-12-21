@@ -1,5 +1,6 @@
 package foo;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @Api(name = "myApi",
      version = "v1",
@@ -76,4 +78,36 @@ public class PetitionEndpoint {
         return result;
     }
 
+    @ApiMethod(name = "signPetition", path = "signPetition", httpMethod = HttpMethod.POST)
+    public void signPetition(@Named("petitionId") Long petitionId, @Named("userId") String userId) {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Transaction txn = datastore.beginTransaction();
+        try {
+            // Get the Petition entity from the Datastore
+            Entity petitionEntity = datastore.get(KeyFactory.createKey("Petition", petitionId));
+            
+            // Update the signatures property with the user's ID
+            List<String> signatures = (List<String>) petitionEntity.getProperty("signatures");
+            if (signatures == null) {
+                signatures = new ArrayList<>();
+            }
+            if (!signatures.contains(userId)) {
+                signatures.add(userId);
+                petitionEntity.setProperty("signatures", signatures);
+                
+                // Save the petition entity back to the Datastore
+                datastore.put(txn, petitionEntity);
+                
+                // Commit the transaction
+                txn.commit();
+            }
+        } catch (Exception e) {
+            // If there are any errors, print the stack trace for debugging
+            e.printStackTrace();
+        } finally {
+            if (txn.isActive()) {
+                txn.rollback(); // Rollback in case of errors or if the transaction is still active
+            }
+        }
+}
 }
