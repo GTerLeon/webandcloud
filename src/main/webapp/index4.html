@@ -33,23 +33,28 @@ var Petition = {
 var PetitionCreateView = {
     title: '',
     description: '',
+    tags: '',
     view: function() {
         return m('div', [
         m('div',{class:'subtitle'},"Create a petition"),
-        m('input[type=text][placeholder=Title of petition]', {
+        m('input[type=text][placeholder=Title]', {
             oninput: function (e) { PetitionCreateView.title = e.target.value },
             value: PetitionCreateView.title
         }),
-        m('input[type=text][placeholder=Description of petition]', {
+        m('input[type=text][placeholder=Description]', {
             oninput: function (e) { PetitionCreateView.description = e.target.value },
             value: PetitionCreateView.description
+        }),
+        m('input[type=text][placeholder=Tags (separated by commas)]', {
+            oninput: function (e) { PetitionCreateView.tags = e.target.value; },
+            value: PetitionCreateView.tags
         }),
         m('button', {
             class: 'button is-link',
             onclick: function() {
                 Petition.create(PetitionCreateView.title, PetitionCreateView.description);
             }
-        }, 'Create')
+        }, 'Create petition')
         ]);
     }	
 };
@@ -83,7 +88,14 @@ var TopPetitionsView = {
 var App = {
     view: function() {
         return m('div', {class: 'container'}, [
-            m('h1', {class: 'title'}, 'TinyPet'),
+            m('nav', {class: 'level'}, [
+                m('div', {class: 'level-left'}, [
+                    m('h1', {class: 'title'}, 'TinyPet')
+                ]),
+                m('div', {class: 'level-right'}, [
+                    m('a', {class: 'button is-primary', href: 'glogin-new.html'}, 'Login')
+                ])
+            ]),
             m('div', {class: 'title is-ancestor'}, [
                 m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(PetitionCreateView))),
                 m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(TopPetitionsView))),
