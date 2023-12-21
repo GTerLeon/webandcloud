@@ -61,26 +61,76 @@ var PetitionCreateView = {
 
 // My Petitions View
 var MyPetitionsView = {
-    oninit: Petition.loadMyPetitions,
+    list: [],
+    loadMyPetitions: function() {
+        // Assuming you have the user's ID and an endpoint to fetch signed petitions
+        return m.request({
+            method: "GET",
+            url: "_ah/api/myApi/v1/userSignedPetitions/" + id_user
+        })
+        .then(function(result) {
+            MyPetitionsView.list = result.items || [];
+        })
+        .catch(function(error) {
+            console.error('Error loading my signed petitions:', error);
+        });
+    },
+    oninit: function(vnode) {
+        MyPetitionsView.loadMyPetitions();
+    },
     view: function() {
         return m('div', [
             m('h2', 'Petitions I have signed'),
-            Petition.myPetitions.map(function(petition) {
-                return m('p', petition.title + ' - ' + petition.signatureCount);
-            })
+            m('div', {class: 'columns is-multiline'},
+                MyPetitionsView.list.map(function(petition) {
+                    return m('div', {class: 'column is-one-third'}, [
+                        m('div', {class: 'box'}, [
+                            m('h1', {class: 'title'}, petition.title),
+                            m('p', {class: 'author'}, 'Author: ' + petition.author),
+                            m('p', {class: 'description'}, petition.description),
+                        ])
+                    ]);
+                })
+            )
         ]);
     }
 };
 
 // Top Petitions View
 var TopPetitionsView = {
-    oninit: Petition.loadList,
+    list: [], // This will hold the list of top petitions
+    loadList: function() {
+        // Make an HTTP request to your server's endpoint for the top 100 petitions
+        return m.request({
+            method: "GET",
+            url: "_ah/api/myApi/v1/topTenPetitions" // You'll need to change this to your actual endpoint
+        })
+        .then(function(result) {
+            TopPetitionsView.list = result.items || [];
+        })
+        .catch(function(error) {
+            console.error('Error loading top petitions:', error);
+        });
+    },
+    oninit: function(vnode) {
+        TopPetitionsView.loadList();
+    },
     view: function() {
         return m('div', [
             m('h2', 'Top 100 petitions'),
-            Petition.list.map(function(petition) {
-                return m('p', petition.title + ' - ' + petition.signatureCount);
-            })
+            m('div', {class: 'columns is-multiline'},
+                // Loop over each petition in the list and display it
+                TopPetitionsView.list.map(function(petition) {
+                    return m('div', {class: 'column is-one-third'}, [
+                        m('div', {class: 'box'}, [
+                            m('h1', {class: 'title'}, petition.title),
+                            // ... Add other petition details here
+                            m('p', {class: 'signs'}, 'Signatures: ' + petition.signatureCount),
+                            // Add a button or link to sign the petition
+                        ])
+                    ]);
+                })
+            )
         ]);
     }
 };
