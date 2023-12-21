@@ -47,8 +47,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 
 public class PetitionEndpoint {
 
-    // ...
-
     @ApiMethod(name = "createPetition", path = "createPetition", httpMethod = HttpMethod.POST)
     public Entity createPetition(@Named("title") String title,
                                  @Named("description") String description,

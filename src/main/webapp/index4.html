@@ -141,7 +141,7 @@ function signPetition(petitionId) {
     var url = "_ah/api/myApi/v1/signPetition/" + petitionId + "/" + id_user;
 
     m.request({
-        method: 'POST', // Change to POST if your API requires it
+        method: 'POST',
         url: url,
     })
     .then(response => {
