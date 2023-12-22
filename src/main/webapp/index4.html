@@ -34,42 +34,14 @@ var PetitionCreateView = {
     title: '',
     description: '',
     tags: '',
-    view: function() {
-        return m('div', [
-            m('div', {class: 'subtitle'}, "Create a petition"),
-            m('input[type=text][placeholder=Title]', {
-                oninput: function(e) { PetitionCreateView.title = e.target.value; },
-                value: PetitionCreateView.title
-            }),
-            m('input[type=text][placeholder=Description]', {
-                oninput: function(e) { PetitionCreateView.description = e.target.value; },
-                value: PetitionCreateView.description
-            }),
-            m('input[type=text][placeholder=Tags (separated by commas)]', {
-                oninput: function(e) { PetitionCreateView.tags = e.target.value; },
-                value: PetitionCreateView.tags
-            }),
-            m('button', {
-                class: 'button is-link',
-                onclick: function() {
-                    // Call the createPetition function when the button is clicked
-                    PetitionCreateView.createPetition();
-                }
-            }, 'Create petition')
-        ]);
-    },
     createPetition: function() {
-        // Assuming the user object contains the logged-in user's email, adjust as necessary
-        var user = { email: 'user@example.com' }; // Replace with actual user email retrieval method
-
         m.request({
             method: 'POST',
             url: '/_ah/api/myApi/v1/createPetition',
             body: {
                 title: PetitionCreateView.title,
                 description: PetitionCreateView.description,
-                tags: PetitionCreateView.tags,
-                user: user // This should be adjusted according to your authentication method
+                tags: PetitionCreateView.tags
             }
         })
         .then(function(result) {
@@ -83,6 +55,15 @@ var PetitionCreateView = {
         .catch(function(error) {
             console.error('Error creating petition', error);
         });
+    },
+    view: function() {
+        return m('div', [
+            // ... Your existing view code ...
+            m('button', {
+                class: 'button is-link',
+                onclick: PetitionCreateView.createPetition
+            }, 'Create petition')
+        ]);
     }
 };
 
@@ -129,12 +110,15 @@ function signPetition(petitionId) {
         return;
     }
     
+    // Perform the API call to sign the petition
     m.request({
         method: 'POST',
         url: '/_ah/api/myApi/v1/signPetition/' + petitionId,
+        // Add the body or headers if needed for user authentication
     })
     .then(function(result) {
         console.log('Signed petition successfully:', result);
+        // Refresh the list of top petitions after signing
         TopPetitionsView.loadList();
     })
     .catch(function(error) {
@@ -146,6 +130,7 @@ function signPetition(petitionId) {
 var TopPetitionsView = {
     list: [],
     loadList: function() {
+        // Make an HTTP request to your server's endpoint for the top 100 petitions
         m.request({
             method: "GET",
             url: "/_ah/api/myApi/v1/getTopPetitions"

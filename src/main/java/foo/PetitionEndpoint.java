@@ -34,27 +34,20 @@ public class PetitionEndpoint {
     private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     @ApiMethod(name = "createPetition", path = "createPetition", httpMethod = ApiMethod.HttpMethod.POST)
-    public Entity createPetition(User user, 
-                                 @Named("title") String title, 
-                                 @Named("description") String description, 
-                                 @Named("tags") String tags) throws UnauthorizedException {
-        if (user == null) {
-            throw new UnauthorizedException("User must be signed in to create a petition.");
-        }
-        
+    public Entity createPetition(
+            @Named("title") String title,
+            @Named("description") String description,
+            @Named("tags") String tags) {
+
         Entity petitionEntity = new Entity("Petition");
-        petitionEntity.setProperty("owner", user.getEmail());
         petitionEntity.setProperty("title", title);
         petitionEntity.setProperty("description", description);
         petitionEntity.setProperty("tags", tags.split(","));
         petitionEntity.setProperty("createdDate", new Date());
-        
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
         datastore.put(petitionEntity);
-        
         return petitionEntity;
     }
-
 
     @ApiMethod(name = "signPetition", path = "signPetition/{petitionId}", httpMethod = ApiMethod.HttpMethod.POST)
     public void signPetition(User user, @Named("petitionId") Long petitionId) throws UnauthorizedException {
