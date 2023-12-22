@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<script>
+<script>    
 
 // Model for Petition
 var Petition = {
@@ -123,14 +123,32 @@ var MyPetitionsView = {
     }
 };
 
+function signPetition(petitionId) {
+    if (!isLoggedIn()) {
+        redirectToLogin();
+        return;
+    }
+    
+    m.request({
+        method: 'POST',
+        url: '/_ah/api/myApi/v1/signPetition/' + petitionId,
+    })
+    .then(function(result) {
+        console.log('Signed petition successfully:', result);
+        TopPetitionsView.loadList();
+    })
+    .catch(function(error) {
+        console.error('Error signing petition:', error);
+    });
+}
+
 // Top Petitions View
 var TopPetitionsView = {
-    list: [], // This will hold the list of top petitions
+    list: [],
     loadList: function() {
-        // Make an HTTP request to your server's endpoint for the top 100 petitions
-        return m.request({
+        m.request({
             method: "GET",
-            url: "_ah/api/myApi/v1/topTenPetitions" // You'll need to change this to your actual endpoint
+            url: "/_ah/api/myApi/v1/getTopPetitions"
         })
         .then(function(result) {
             TopPetitionsView.list = result.items || [];
@@ -145,41 +163,20 @@ var TopPetitionsView = {
     view: function() {
         return m('div', [
             m('h2', 'Top 100 petitions'),
-            Petition.list.map(function(petition) {
-                return m('div', {class: 'petition'}, [
-                    m('h3', petition.title),
-                    m('p', petition.description),
-                    m('button', {
-                        onclick: function() {
-                            signPetition(petition.id); // Assuming petition has an id field
-                        }
-                    }, 'Sign')
-                ]);
-            })
+            m('div', 
+                TopPetitionsView.list.map(function(petition) {
+                    return m('div', {class: 'petition'},
+                        m('h3', petition.title),
+                        m('p', petition.description),
+                        m('button', {
+                            onclick: function() { signPetition(petition.id); }
+                        }, 'Sign')
+                    );
+                })
+            )
         ]);
     }
 };
-
-function signPetition(petitionId) {
-    if (!isLoggedIn()) {
-        redirectToLogin();
-        return;
-    }
-    var url = "_ah/api/myApi/v1/signPetition/" + petitionId + "/" + id_user;
-
-    m.request({
-        method: 'POST',
-        url: url,
-    })
-    .then(response => {
-        console.log('Signed');
-        TopPetitionsView.loadList();
-        MyPetitionsView.loadMyPetitions();
-    })
-    .catch(error => {
-        console.error('Error couldn\'t sign:', error);
-    });
-}
 
 var App = {
     view: function() {

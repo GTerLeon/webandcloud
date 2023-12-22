@@ -56,30 +56,29 @@ public class PetitionEndpoint {
     }
 
 
-    @ApiMethod(name = "signPetition", httpMethod = ApiMethod.HttpMethod.POST)
-    public void signPetition(User user, @Named("petitionId") long petitionId) throws UnauthorizedException, EntityNotFoundException {
+    @ApiMethod(name = "signPetition", path = "signPetition/{petitionId}", httpMethod = ApiMethod.HttpMethod.POST)
+    public void signPetition(User user, @Named("petitionId") Long petitionId) throws UnauthorizedException {
         if (user == null) {
-            throw new UnauthorizedException("User must be signed in to sign a petition.");
+            throw new UnauthorizedException("User must be signed in.");
         }
-        Transaction txn = datastore.beginTransaction();
+
+        Key petitionKey = KeyFactory.createKey("Petition", petitionId);
         try {
-            Key key = KeyFactory.createKey("Petition", petitionId);
-            Entity petitionEntity = datastore.get(key);
-            List<String> signatures = (List<String>) petitionEntity.getProperty("signatures");
+            Entity petitionEntity = datastore.get(petitionKey);
+            ArrayList<String> signatures = (ArrayList<String>) petitionEntity.getProperty("signatures");
             if (signatures == null) {
                 signatures = new ArrayList<>();
             }
-            if (!signatures.contains(user.getEmail())) {
-                signatures.add(user.getEmail());
+            String userEmail = user.getEmail();
+            if (!signatures.contains(userEmail)) {
+                signatures.add(userEmail);
                 petitionEntity.setProperty("signatures", signatures);
-                petitionEntity.setProperty("signatureCount", signatures.size());
                 datastore.put(petitionEntity);
-                txn.commit();
+            } else {
+                throw new UnauthorizedException("User has already signed this petition.");
             }
-        } finally {
-            if (txn.isActive()) {
-                txn.rollback();
-            }
+        } catch (EntityNotFoundException e) {
+            throw new UnauthorizedException("Petition not found.");
         }
     }
 
