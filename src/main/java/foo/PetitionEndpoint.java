@@ -38,7 +38,7 @@ public class PetitionEndpoint {
             @Named("title") String title,
             @Named("description") String description,
             @Named("tags") String tags) {
-
+        
         Entity petitionEntity = new Entity("Petition");
         petitionEntity.setProperty("title", title);
         petitionEntity.setProperty("description", description);

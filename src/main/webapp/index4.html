@@ -34,38 +34,47 @@ var PetitionCreateView = {
     title: '',
     description: '',
     tags: '',
-    createPetition: function() {
+    view: function() {
+        return m('div', [
+            m('h3', 'Create a Petition'),
+            m('input[type=text][placeholder=Title]', {
+                oninput: function (e) { PetitionCreateView.title = e.target.value },
+                value: PetitionCreateView.title
+            }),
+            m('textarea[placeholder=Description]', {
+                oninput: function (e) { PetitionCreateView.description = e.target.value },
+                value: PetitionCreateView.description
+            }),
+            m('input[type=text][placeholder=Tags (separated by commas)]', {
+                oninput: function (e) { PetitionCreateView.tags = e.target.value; },
+                value: PetitionCreateView.tags
+            }),
+            m('button', {
+                onclick: PetitionCreateView.create
+            }, 'Submit Petition')
+        ]);
+    },
+    create: function() {
         m.request({
             method: 'POST',
-            url: '/_ah/api/myApi/v1/createPetition',
+            url: '/api/createPetition',
             body: {
                 title: PetitionCreateView.title,
                 description: PetitionCreateView.description,
                 tags: PetitionCreateView.tags
             }
-        })
-        .then(function(result) {
-            console.log('Petition created successfully', result);
-            // Clear the form and provide feedback to the user as needed
+        }).then(function(result) {
+            console.log('Petition created:', result);
+            // Reset form
             PetitionCreateView.title = '';
             PetitionCreateView.description = '';
             PetitionCreateView.tags = '';
-            // Refresh the list of petitions or navigate the user to another view
-        })
-        .catch(function(error) {
-            console.error('Error creating petition', error);
+        }).catch(function(error) {
+            console.error('Error creating petition:', error);
         });
-    },
-    view: function() {
-        return m('div', [
-            // ... Your existing view code ...
-            m('button', {
-                class: 'button is-link',
-                onclick: PetitionCreateView.createPetition
-            }, 'Create petition')
-        ]);
     }
 };
+
 
 // My Petitions View
 var MyPetitionsView = {
