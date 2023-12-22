@@ -14,21 +14,6 @@
 
 <script>    
 
-// Model for Petition
-var Petition = {
-    list: [],
-    myPetitions: [],
-    create: function(title, description) {
-        // Create petition
-    },
-    loadList: function() {
-        // Load petitions from the server
-    },
-    loadMyPetitions: function() {
-        // Load user petition
-    }
-};
-
 // Petition Creation View
 var PetitionCreateView = {
     title: '',
@@ -80,7 +65,6 @@ var PetitionCreateView = {
 var MyPetitionsView = {
     list: [],
     loadMyPetitions: function() {
-        // Assuming you have the user's ID and an endpoint to fetch signed petitions
         return m.request({
             method: "GET",
             url: "_ah/api/myApi/v1/userSignedPetitions/" + id_user
@@ -119,15 +103,12 @@ function signPetition(petitionId) {
         return;
     }
     
-    // Perform the API call to sign the petition
     m.request({
         method: 'POST',
         url: '/_ah/api/myApi/v1/signPetition/' + petitionId,
-        // Add the body or headers if needed for user authentication
     })
     .then(function(result) {
         console.log('Signed petition successfully:', result);
-        // Refresh the list of top petitions after signing
         TopPetitionsView.loadList();
     })
     .catch(function(error) {
@@ -139,7 +120,6 @@ function signPetition(petitionId) {
 var TopPetitionsView = {
     list: [],
     loadList: function() {
-        // Make an HTTP request to your server's endpoint for the top 100 petitions
         m.request({
             method: "GET",
             url: "/_ah/api/myApi/v1/getTopPetitions"
