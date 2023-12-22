@@ -1,3 +1,16 @@
+#What works
+
+UI written in mithril
+
+#Work in:
+
+```
+/src/main/webapp/index4.html
+/src/main/java/foo/PetitionEndpoint.java
+```
+
+
+
 # fast install
 
 * precondition: you have a GCP project selected with billing activated. 
