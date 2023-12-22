@@ -36,27 +36,54 @@ var PetitionCreateView = {
     tags: '',
     view: function() {
         return m('div', [
-        m('div',{class:'subtitle'},"Create a petition"),
-        m('input[type=text][placeholder=Title]', {
-            oninput: function (e) { PetitionCreateView.title = e.target.value },
-            value: PetitionCreateView.title
-        }),
-        m('input[type=text][placeholder=Description]', {
-            oninput: function (e) { PetitionCreateView.description = e.target.value },
-            value: PetitionCreateView.description
-        }),
-        m('input[type=text][placeholder=Tags (separated by commas)]', {
-            oninput: function (e) { PetitionCreateView.tags = e.target.value; },
-            value: PetitionCreateView.tags
-        }),
-        m('button', {
-            class: 'button is-link',
-            onclick: function() {
-                Petition.create(PetitionCreateView.title, PetitionCreateView.description);
-            }
-        }, 'Create petition')
+            m('div', {class: 'subtitle'}, "Create a petition"),
+            m('input[type=text][placeholder=Title]', {
+                oninput: function(e) { PetitionCreateView.title = e.target.value; },
+                value: PetitionCreateView.title
+            }),
+            m('input[type=text][placeholder=Description]', {
+                oninput: function(e) { PetitionCreateView.description = e.target.value; },
+                value: PetitionCreateView.description
+            }),
+            m('input[type=text][placeholder=Tags (separated by commas)]', {
+                oninput: function(e) { PetitionCreateView.tags = e.target.value; },
+                value: PetitionCreateView.tags
+            }),
+            m('button', {
+                class: 'button is-link',
+                onclick: function() {
+                    // Call the createPetition function when the button is clicked
+                    PetitionCreateView.createPetition();
+                }
+            }, 'Create petition')
         ]);
-    }	
+    },
+    createPetition: function() {
+        // Assuming the user object contains the logged-in user's email, adjust as necessary
+        var user = { email: 'user@example.com' }; // Replace with actual user email retrieval method
+
+        m.request({
+            method: 'POST',
+            url: '/_ah/api/myApi/v1/createPetition',
+            body: {
+                title: PetitionCreateView.title,
+                description: PetitionCreateView.description,
+                tags: PetitionCreateView.tags,
+                user: user // This should be adjusted according to your authentication method
+            }
+        })
+        .then(function(result) {
+            console.log('Petition created successfully', result);
+            // Clear the form and provide feedback to the user as needed
+            PetitionCreateView.title = '';
+            PetitionCreateView.description = '';
+            PetitionCreateView.tags = '';
+            // Refresh the list of petitions or navigate the user to another view
+        })
+        .catch(function(error) {
+            console.error('Error creating petition', error);
+        });
+    }
 };
 
 // My Petitions View
